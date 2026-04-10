@@ -8,13 +8,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-    // Nếu là định dạng link postgres://... (thường gặp trên Render)
     if (connectionString != null && (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
     {
         var databaseUri = new Uri(connectionString);
         var userInfo = databaseUri.UserInfo.Split(':');
+        
+        var host = databaseUri.Host;
+        var port = databaseUri.Port > 0 ? databaseUri.Port : 5432; // Tự gán 5432 nếu Render không ghi Port
+        var database = databaseUri.AbsolutePath.TrimStart('/');
+        var user = userInfo[0];
+        var password = userInfo.Length > 1 ? userInfo[1] : "";
 
-        connectionString = $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true;";
+        connectionString = $"Host={host};Port={port};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
     }
 
     options.UseNpgsql(connectionString);
