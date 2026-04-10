@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ConnectDB.Models;
 
 namespace ConnectDB.Data
@@ -70,6 +70,26 @@ namespace ConnectDB.Data
                 .HasOne(p => p.Session)
                 .WithOne()
                 .HasForeignKey<Payment>(p => p.SessionId);
+
+            // Seed Data
+            modelBuilder.Entity<Room>().HasData(
+                new Room { RoomId = 1, RoomName = "Phòng VIP 01", Location = "Tầng 1" },
+                new Room { RoomId = 2, RoomName = "Phòng Máy Thường", Location = "Tầng 2" }
+            );
+
+            modelBuilder.Entity<Computer>().HasData(
+                new Computer { ComputerId = 1, ComputerName = "VIP-01", Status = "Available", RoomId = 1 },
+                new Computer { ComputerId = 2, ComputerName = "VIP-02", Status = "Available", RoomId = 1 },
+                new Computer { ComputerId = 3, ComputerName = "NORM-01", Status = "Available", RoomId = 2 },
+                new Computer { ComputerId = 4, ComputerName = "NORM-02", Status = "Available", RoomId = 2 }
+            );
+
+            modelBuilder.Entity<Service>().HasData(
+                new Service { ServiceId = 1, Name = "Mì Tôm Trứng", Price = 25000 },
+                new Service { ServiceId = 2, Name = "Sting Dâu", Price = 15000 },
+                new Service { ServiceId = 3, Name = "Cơm Chiên Dương Châu", Price = 45000 },
+                new Service { ServiceId = 4, Name = "Xúc Xích Đức", Price = 12000 }
+            );
         }
     }
 }
