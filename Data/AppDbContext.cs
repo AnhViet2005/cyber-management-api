@@ -73,8 +73,8 @@ namespace ConnectDB.Data
 
             // Seed Data
             modelBuilder.Entity<Room>().HasData(
-                new Room { RoomId = 1, RoomName = "Phòng VIP 01", Location = "Tầng 1" },
-                new Room { RoomId = 2, RoomName = "Phòng Máy Thường", Location = "Tầng 2" }
+                new Room { RoomId = 1, Name = "Phòng VIP 01", Type = "VIP" },
+                new Room { RoomId = 2, Name = "Phòng Máy Thường", Type = "Normal" }
             );
 
             modelBuilder.Entity<Computer>().HasData(
