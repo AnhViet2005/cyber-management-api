@@ -90,6 +90,36 @@ namespace ConnectDB.Data
                 new Service { ServiceId = 3, Name = "Cơm Chiên Dương Châu", Price = 45000 },
                 new Service { ServiceId = 4, Name = "Xúc Xích Đức", Price = 12000 }
             );
+
+            // 1. Seed Customer
+            modelBuilder.Entity<Customer>().HasData(
+                new Customer { CustomerId = 1, Username = "anhviet", Fullname = "Anh Việt Admin", Balance = 100000 },
+                new Customer { CustomerId = 2, Username = "khachhang01", Fullname = "Nguyễn Văn A", Balance = 50000 }
+            );
+
+            // 2. Seed Session (Phiên chơi)
+            modelBuilder.Entity<Session>().HasData(
+                new Session { SessionId = 1, CustomerId = 1, ComputerId = 1, StartTime = DateTime.Parse("2026-04-10 08:00:00"), Status = "Playing", HourlyRate = 10000 },
+                new Session { SessionId = 2, CustomerId = 2, ComputerId = 3, StartTime = DateTime.Parse("2026-04-10 07:00:00"), EndTime = DateTime.Parse("2026-04-10 09:00:00"), Status = "Done", HourlyRate = 8000 }
+            );
+
+            // 3. Seed Order (Đơn hàng gọi món)
+            modelBuilder.Entity<Order>().HasData(
+                new Order { OrderId = 1, SessionId = 1, OrderTime = DateTime.Parse("2026-04-10 08:30:00") },
+                new Order { OrderId = 2, SessionId = 2, OrderTime = DateTime.Parse("2026-04-10 07:30:00") }
+            );
+
+            // 4. Seed OrderDetail (Chi tiết món ăn)
+            modelBuilder.Entity<OrderDetail>().HasData(
+                new OrderDetail { OrderDetailId = 1, OrderId = 1, ServiceId = 1, Quantity = 1, Price = 25000 }, // Mì tôm cho anhviet
+                new OrderDetail { OrderDetailId = 2, OrderId = 1, ServiceId = 2, Quantity = 1, Price = 15000 }, // Sting cho anhviet
+                new OrderDetail { OrderDetailId = 3, OrderId = 2, ServiceId = 4, Quantity = 2, Price = 12000 }  // 2 Xúc xích cho khách 01
+            );
+
+            // 5. Seed Payment (Thanh toán cho khách đã chơi xong)
+            modelBuilder.Entity<Payment>().HasData(
+                new Payment { PaymentId = 1, SessionId = 2, TotalAmount = 16000 + 24000, PaymentMethod = "Cash", PaymentTime = DateTime.Parse("2026-04-10 09:05:00") } 
+            );
         }
     }
 }
