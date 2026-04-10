@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConnectDB.Models
@@ -20,6 +20,6 @@ namespace ConnectDB.Models
         [MaxLength(20)]
         public string PaymentMethod { get; set; } // Cash / Balance
 
-        public DateTime PaymentTime { get; set; } = DateTime.Now;
+        public DateTime PaymentTime { get; set; } = DateTime.UtcNow;
     }
 }

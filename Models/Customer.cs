@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConnectDB.Models
@@ -18,6 +18,6 @@ namespace ConnectDB.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal Balance { get; set; } = 0;
 
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }
 }

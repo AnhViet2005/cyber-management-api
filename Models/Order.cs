@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConnectDB.Models
@@ -14,6 +14,6 @@ namespace ConnectDB.Models
         [ForeignKey("SessionId")]
         public Session Session { get; set; }
 
-        public DateTime OrderTime { get; set; } = DateTime.Now;
+        public DateTime OrderTime { get; set; } = DateTime.UtcNow;
     }
 }
