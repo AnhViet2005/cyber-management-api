@@ -6,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // 👉 Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    // Ưu tiên đọc từ DATABASE_URL (Render), nếu không có mới tìm trong appsettings
+    var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                          ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
     if (connectionString != null && (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
     {
@@ -14,7 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         var userInfo = databaseUri.UserInfo.Split(':');
         
         var host = databaseUri.Host;
-        var port = databaseUri.Port > 0 ? databaseUri.Port : 5432; // Tự gán 5432 nếu Render không ghi Port
+        var port = databaseUri.Port > 0 ? databaseUri.Port : 5432;
         var database = databaseUri.AbsolutePath.TrimStart('/');
         var user = userInfo[0];
         var password = userInfo.Length > 1 ? userInfo[1] : "";
