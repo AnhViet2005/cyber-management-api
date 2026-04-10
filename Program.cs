@@ -40,31 +40,56 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     // db.Database.Migrate(); // Nếu dùng migration
-    db.Database.EnsureCreated(); // Đơn giản nhất là EnsureCreated để tạo bảng từ Model
+    db.Database.EnsureCreated();
 
-    // 👉 Ép nạp dữ liệu mẫu nếu bảng Customers đang trống
-    if (!db.Customers.Any())
+    // 👉 Ép nạp dữ liệu mẫu AN TOÀN (Safe Seeding)
+    try 
     {
-        var room1 = new ConnectDB.Models.Room { Name = "Phòng VIP 01", Type = "VIP" };
-        var room2 = new ConnectDB.Models.Room { Name = "Phòng Máy Thường", Type = "Normal" };
-        db.Rooms.AddRange(room1, room2);
-        db.SaveChanges(); // Lưu để lấy ID cho các bảng sau
+        if (!db.Customers.Any())
+        {
+            // Kiểm tra và nạp Phòng nếu chưa có
+            if (!db.Rooms.Any())
+            {
+                db.Rooms.AddRange(
+                    new ConnectDB.Models.Room { Name = "Phòng VIP 01", Type = "VIP" },
+                    new ConnectDB.Models.Room { Name = "Phòng Máy Thường", Type = "Normal" }
+                );
+                db.SaveChanges();
+            }
 
-        var sv1 = new ConnectDB.Models.Service { Name = "Mì Tôm Trứng", Price = 25000 };
-        var sv2 = new ConnectDB.Models.Service { Name = "Sting Dâu", Price = 15000 };
-        db.Services.AddRange(sv1, sv2);
+            var room1 = db.Rooms.First();
+            
+            // Nạp Máy tính nếu chưa có
+            if (!db.Computers.Any())
+            {
+                db.Computers.AddRange(
+                    new ConnectDB.Models.Computer { ComputerName = "VIP-01", Status = "Available", RoomId = room1.RoomId },
+                    new ConnectDB.Models.Computer { ComputerName = "NORM-01", Status = "Available", RoomId = room1.RoomId }
+                );
+            }
 
-        var c1 = new ConnectDB.Models.Computer { ComputerName = "VIP-01", Status = "Available", RoomId = room1.RoomId };
-        var c2 = new ConnectDB.Models.Computer { ComputerName = "NORM-01", Status = "Available", RoomId = room2.RoomId };
-        db.Computers.AddRange(c1, c2);
+            // Nạp Khách hàng
+            var cus1 = new ConnectDB.Models.Customer { Username = "anhviet", Fullname = "Anh Việt Admin", Balance = 100000 };
+            db.Customers.Add(cus1);
+            db.SaveChanges();
 
-        var cus1 = new ConnectDB.Models.Customer { Username = "anhviet", Fullname = "Anh Việt Admin", Balance = 100000 };
-        db.Customers.Add(cus1);
-        db.SaveChanges();
-
-        var session1 = new ConnectDB.Models.Session { CustomerId = cus1.CustomerId, ComputerId = c1.ComputerId, StartTime = DateTime.UtcNow, Status = "Playing", HourlyRate = 10000 };
-        db.Sessions.Add(session1);
-        db.SaveChanges();
+            // Nạp Phiên chơi (Sử dụng thời gian chuẩn UTC cho PostgreSQL)
+            var session1 = new ConnectDB.Models.Session 
+            { 
+                CustomerId = cus1.CustomerId, 
+                ComputerId = db.Computers.First().ComputerId, 
+                StartTime = DateTime.UtcNow, 
+                Status = "Playing", 
+                HourlyRate = 10000 
+            };
+            db.Sessions.Add(session1);
+            db.SaveChanges();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Nếu lỗi nạp dữ liệu thì chỉ ghi log, không làm sập App
+        Console.WriteLine("Lỗi nạp dữ liệu mẫu: " + ex.Message);
     }
 }
 
